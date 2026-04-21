@@ -1,0 +1,19 @@
+name: Auto Checkout (Daily)
+
+on:
+  schedule:
+    # Runs every day at 12:00 AM PST (UTC-8 = 08:00 UTC)
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger-vercel-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel API
+        env:
+          AUTO_CHECKOUT_SECRET: ${{ secrets.AUTO_CHECKOUT_SECRET }}
+          VERCEL_BASE_URL: https://lst-ems.vercel.app
+        run: |
+          curl --fail --silent --show-error \
+            "$VERCEL_BASE_URL/api/auto-checkout?token=$AUTO_CHECKOUT_SECRET"

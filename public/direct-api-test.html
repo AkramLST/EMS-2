@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct API Test</title>
+</head>
+<body>
+    <h1>Direct Office Times API Test</h1>
+    <button onclick="testAPI()">Test Current API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Test the getOfficeTimes function directly
+                const response = await fetch('/api/admin/office-times', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>API Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>Status: ${response.status}</p>
+                    <p>Start Time: ${data.startTime}</p>
+                    <p>End Time: ${data.endTime}</p>
+                `;
+                
+                console.log('API Response:', data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

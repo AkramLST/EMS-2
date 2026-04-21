@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Times API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Office Times API Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Controls</h3>
+        <button onclick="testGetAPI()">Test GET API</button>
+        <button onclick="testPostAPI()">Test POST API (Save 10:30-19:00)</button>
+        <button onclick="testFullFlow()">Test Full Flow</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const baseURL = window.location.origin;
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-section ${type}`;
+            div.innerHTML = `<pre>${message}</pre>`;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testGetAPI() {
+            try {
+                log('🔍 Testing GET /api/admin/office-times...');
+                
+                const response = await fetch(`${baseURL}/api/admin/office-times`, {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                log(`Status: ${response.status}
+Response: ${JSON.stringify(data, null, 2)}`, response.ok ? 'success' : 'error');
+                
+            } catch (error) {
+                log(`❌ GET API Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testPostAPI() {
+            try {
+                log('📤 Testing POST /api/admin/office-times...');
+                
+                const testData = {
+                    startTime: '10:30',
+                    endTime: '19:00'
+                };
+                
+                const response = await fetch(`${baseURL}/api/admin/office-times`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                log(`Status: ${response.status}
+Sent: ${JSON.stringify(testData, null, 2)}
+Response: ${JSON.stringify(data, null, 2)}`, response.ok ? 'success' : 'error');
+                
+            } catch (error) {
+                log(`❌ POST API Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFullFlow() {
+            log('🚀 Starting Full Flow Test...');
+            
+            // Step 1: Get current times
+            await testGetAPI();
+            
+            // Step 2: Save new times
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+            await testPostAPI();
+            
+            // Step 3: Get times again to verify
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+            log('🔍 Verifying save by getting times again...');
+            await testGetAPI();
+            
+            log('✅ Full flow test completed!', 'success');
+        }
+
+        // Auto-run a basic test on page load
+        window.onload = function() {
+            log('🌟 Office Times API Test Page Loaded');
+            log('Click the buttons above to test the API endpoints.');
+        };
+    </script>
+</body>
+</html>
