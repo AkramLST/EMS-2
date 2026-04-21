@@ -26,8 +26,16 @@ import {
 import { cn } from "@/lib/utils";
 import { clearAuthTokenCookie } from "@/lib/cookies";
 import { usePermissions } from "@/hooks/usePermission";
-
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: any;
+  permission: string;
+  includeRoles?: string[];
+  excludeRoles?: string[];
+  children?: NavItem[];
+};
+const navigation: NavItem[] = [
   {
     name: "Dashboard",
     href: "/dashboard",
